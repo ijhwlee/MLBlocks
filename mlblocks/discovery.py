@@ -21,6 +21,8 @@ LOGGER = logging.getLogger(__name__)
 _PRIMITIVES_PATHS = [
     os.path.join(os.getcwd(), 'mlprimitives'),
     os.path.join(sys.prefix, 'mlprimitives'),
+    os.path.join(sys.prefix, 'mlprimitives', 'primitives'),
+    os.path.join(sys.prefix, 'Lib', 'site-packages', 'mlprimitives', 'primitives'),
     os.path.join(os.getcwd(), 'mlblocks_primitives'),    # legacy
     os.path.join(sys.prefix, 'mlblocks_primitives'),    # legacy
 ]
@@ -169,7 +171,10 @@ def get_primitives_paths():
         list:
             The list of folders.
     """
+    print("[DEBUG-hwlee]MLBlocks.get_primitive_paths: _load_entry_points('primitives')= {0}".format(_load_entry_points('primitives')))
+    print("[DEBUG-hwlee]MLBlocks.get_primitive_paths: _load_entry_points(,)= {0}".format(_load_entry_points('jsons_path', 'mlprimitives')))
     paths = _load_entry_points('primitives') + _load_entry_points('jsons_path', 'mlprimitives')
+    print("[DEBUG-hwlee]MLBlocks.get_primitive_paths: _PRIMITIVES_PATHS = {0}".format(_PRIMITIVES_PATHS))
     return _PRIMITIVES_PATHS + list(set(paths))
 
 
@@ -220,20 +225,35 @@ def _load(name, paths):
         dict:
             The content of the JSON annotation file loaded into a dict.
     """
+    print("[DEBUG-hwlee]MLBlocks._load: name = {0}, paths = {1}".format(name, paths))
     if os.path.isfile(name):
         return _load_json(name)
 
     for base_path in paths:
+        # first check if there is json file with given name
+        filename = name + '.json'
+        json_path = os.path.join(base_path, filename)
+
+        print("[DEBUG-hwlee]MLBlocks._load: base_path = {0} =====================".format(base_path))
+        print("[DEBUG-hwlee]MLBlocks._load: json_path = {0}".format(json_path))
+        print("[DEBUG-hwlee]MLBlocks._load: os.path.isfile(json_path) = {0}".format(os.path.isfile(json_path)))
+        if os.path.isfile(json_path):
+            return _load_json(json_path)
+
         parts = name.split('.')
         number_of_parts = len(parts)
 
+        """
         for folder_parts in range(number_of_parts):
             folder = os.path.join(base_path, *parts[:folder_parts])
             filename = '.'.join(parts[folder_parts:]) + '.json'
             json_path = os.path.join(folder, filename)
 
+            print("[DEBUG-hwlee]MLBlocks._load: folder = {0}      =================".format(folder))
+            print("[DEBUG-hwlee]MLBlocks._load: filename = {0}, json_path = {1}".format(filename, json_path))
             if os.path.isfile(json_path):
                 return _load_json(json_path)
+        """
 
 
 def load_primitive(name):
@@ -254,6 +274,7 @@ def load_primitive(name):
         ValueError:
             A ``ValueError`` will be raised if the primitive cannot be found.
     """
+    print("[DEBUG-hwlee]MLBlocks.discovery: get_primitives_paths() = {0}".format(get_primitives_paths()))
     primitive = _load(name, get_primitives_paths())
     if primitive is None:
         raise ValueError("Unknown primitive: {}".format(name))
