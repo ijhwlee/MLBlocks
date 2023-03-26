@@ -105,6 +105,7 @@ class MLPipeline():
             else:
                 primitive_name = primitive['name']
 
+            print("[DEBUG-hwlee]mlblocks.mlpipeline._build_blocks: primitive={0}, primitive_name={1}".format(primitive,primitive_name))
             try:
                 block_names_count.update([primitive_name])
                 block_count = block_names_count[primitive_name]
@@ -130,6 +131,7 @@ class MLPipeline():
 
     @staticmethod
     def _get_pipeline_dict(pipeline, primitives):
+        #print("[DEBUG-hwlee]mlblocks.mlpipeline:_get_pipeline_dict: pipeline = {0}, primitives = {1}".format(pipeline, primitives))
         if isinstance(pipeline, dict):
             return pipeline
 
