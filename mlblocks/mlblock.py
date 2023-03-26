@@ -14,14 +14,14 @@ LOGGER = logging.getLogger(__name__)
 def import_object(object_name):
     """Import an object from its Fully Qualified Name."""
 
-    print("[DEBUG-hwlee]mlblocks.mlblock.import_object: object_name = {0}".format(object_name))
+    #print("[DEBUG-hwlee]mlblocks.mlblock.import_object: object_name = {0}".format(object_name))
     if isinstance(object_name, str):
         parent_name, attribute = object_name.rsplit('.', 1)
-        print("[DEBUG-hwlee]mlblocks.mlblock.import_object: parent_name = {0}".format(parent_name))
+        #print("[DEBUG-hwlee]mlblocks.mlblock.import_object: parent_name = {0}".format(parent_name))
         try:
             parent = importlib.import_module(parent_name)
         except ImportError:
-            print("[DEBUG-hwlee]mlbolcks.mlblock.import_object: ImportError = {0}".format(ImportError.msg))
+            #print("[DEBUG-hwlee]mlbolcks.mlblock.import_object: ImportError = {0}".format(ImportError.msg))
             grand_parent_name, parent_name = parent_name.rsplit('.', 1)
             grand_parent = importlib.import_module(grand_parent_name)
             parent = getattr(grand_parent, parent_name)
@@ -168,14 +168,14 @@ class MLBlock():
         if isinstance(primitive, str):
             primitive = load_primitive(primitive)
 
-        print("[DEBUG-hwlee]mlblocks.mlblock.__init__: primitive = {0}".format(primitive))
+        #print("[DEBUG-hwlee]mlblocks.mlblock.__init__: primitive = {0}".format(primitive))
         self.metadata = primitive
         self.name = primitive['name']
 
-        print("[DEBUG-hwlee]mlblocks.mlblock.__init__: self.name = {0}, before calling import_object".format(self.name))
-        print("[DEBUG-hwlee]mlblocks.mlblock.__init__: self.metadata['primitive'] = {0}".format(self.metadata['primitive']))
+        #print("[DEBUG-hwlee]mlblocks.mlblock.__init__: self.name = {0}, before calling import_object".format(self.name))
+        #print("[DEBUG-hwlee]mlblocks.mlblock.__init__: self.metadata['primitive'] = {0}".format(self.metadata['primitive']))
         self.primitive = import_object(self.metadata['primitive'])
-        print("[DEBUG-hwlee]mlblocks.mlblock.__init__: self.primitive = {0}, after calling import_object".format(self.primitive))
+        #print("[DEBUG-hwlee]mlblocks.mlblock.__init__: self.primitive = {0}, after calling import_object".format(self.primitive))
 
         self._fit = self.metadata.get('fit', dict())
         self.fit_args = self._fit.get('args', [])
@@ -197,7 +197,7 @@ class MLBlock():
 
         self._tunable = self._get_tunable(hyperparameters, init_params)
 
-        print("[DEBUG-hwlee]mlblocks.mlblock.__init__ : self._fit_params = {0}".format(self._fit_params))
+        #print("[DEBUG-hwlee]mlblocks.mlblock.__init__ : self._fit_params = {0}".format(self._fit_params))
         default = {
             name: param['default']
             for name, param in self._tunable.items()
@@ -205,7 +205,7 @@ class MLBlock():
         }
 
         self.set_hyperparameters(default)
-        print("[DEBUG-hwlee]mlblocks.mlblock.__init__ : ***************** END of mblock.__init___ ********")
+        #print("[DEBUG-hwlee]mlblocks.mlblock.__init__ : ***************** END of mblock.__init___ ********")
 
     def __str__(self):
         """Return a string that represents this block."""
