@@ -108,6 +108,10 @@ class MLBlock():
             else:
                 raise TypeError("{} required argument '{}' not found".format(self.name, name))
 
+            print("[DEBUG-hwlee]mlblocks.mlblock._extract_params: name = {0}, value = {1}".format(name, value))
+            if name == 'feature_range':
+                value = (value[0], value[1]) # change to tuple
+            print("[DEBUG-hwlee]mlblocks.mlblock._extract_params: name = {0}, value = {1}, type(value) = {2}".format(name, value, type(value)))
             init_params[name] = value
 
         for name, param in hyperparameters.get('tunable', dict()).items():
@@ -168,7 +172,7 @@ class MLBlock():
         if isinstance(primitive, str):
             primitive = load_primitive(primitive)
 
-        #print("[DEBUG-hwlee]mlblocks.mlblock.__init__: primitive = {0}".format(primitive))
+        print("[DEBUG-hwlee]mlblocks.mlblock.__init__: primitive = {0}".format(primitive))
         self.metadata = primitive
         self.name = primitive['name']
 
@@ -190,6 +194,7 @@ class MLBlock():
 
         hyperparameters = self.metadata.get('hyperparameters', dict())
         init_params, fit_params, produce_params = self._extract_params(kwargs, hyperparameters)
+        print("[DEBUG-hwlee]mlblocks.mlblock.__init__: hyperparameters = {0}, init_params = {1}, fit_params = {2}, produce_params = {3}".format(hyperparameters, init_params, fit_params, produce_params))
 
         self._hyperparameters = init_params
         self._fit_params = fit_params
@@ -205,7 +210,8 @@ class MLBlock():
         }
 
         self.set_hyperparameters(default)
-        #print("[DEBUG-hwlee]mlblocks.mlblock.__init__ : ***************** END of mblock.__init___ ********")
+        print("[DEBUG-hwlee]mlblocks.mlblock.__init__ : self._fit = {0}".format(self._fit))
+        print("[DEBUG-hwlee]mlblocks.mlblock.__init__ : ***************** END of mblock.__init___ ********")
 
     def __str__(self):
         """Return a string that represents this block."""
@@ -254,6 +260,7 @@ class MLBlock():
         if self._class:
             LOGGER.debug('Creating a new primitive instance for %s', self.name)
             self.instance = self.primitive(**self.get_hyperparameters())
+            print("[DEBUG-hwlee]mlblocks.mlblock.set_hyperparameters: self.instance = {0}, self.get_hyperparameters() = {1}".format(self.instance, self.get_hyperparameters()))
 
     def _get_method_kwargs(self, kwargs, method_args):
         """Prepare the kwargs for the method.
@@ -317,6 +324,9 @@ class MLBlock():
             fit_kwargs = self._fit_params.copy()
             fit_kwargs.update(kwargs)
             fit_kwargs = self._get_method_kwargs(fit_kwargs, self.fit_args)
+            print("[DEBUG-hwlee]mlblocks.mlblock.fit: fit_kwargs = {0}, self = {1}".format(fit_kwargs, self))
+            print("[DEBUG-hwlee]mlblocks.mlblock.fit: self.instance = {0}, self.fit_method = {1}".format(self.instance, self.fit_method))
+            print("[DEBUG-hwlee]mlblocks.mlblock.fit: getattr() = {0}".format(getattr(self.instance, self.fit_method)))
             getattr(self.instance, self.fit_method)(**fit_kwargs)
 
     def produce(self, **kwargs):

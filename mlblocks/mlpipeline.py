@@ -212,7 +212,9 @@ class MLPipeline():
     def __init__(self, pipeline=None, primitives=None, init_params=None,
                  input_names=None, output_names=None, outputs=None, verbose=True):
 
+        print("[DEBUG-hwlee]mlblocks.mlpipeline.__init__: pipeline = {0}, primitives = {1}".format(pipeline, primitives))
         pipeline = self._get_pipeline_dict(pipeline, primitives)
+        print("[DEBUG-hwlee]mlblocks.mlpipeline.__init__: pipeline = {0}, primitives = {1}, after _get_pipeline_dict()".format(pipeline, primitives))
 
         self.primitives = primitives or pipeline['primitives']
         self.init_params = init_params or pipeline.get('init_params', dict())
@@ -638,8 +640,10 @@ class MLPipeline():
     def _fit_block(self, block, block_name, context, debug_info=None):
         """Get the block args from the context and fit the block."""
         LOGGER.debug('Fitting block %s', block_name)
+        print("[DEBUG-hwlee]mlblocks.mlpipeline._fit_block: block_name = {0}".format(block_name))
         try:
             fit_args = self._get_block_args(block_name, block.fit_args, context)
+            print("[DEBUG-hwlee]mlblocks.mlpipeline._fit_block: block = {0}, block.fit_args = {1}, fit_args = {2}".format(block, block.fit_args, fit_args))
             process = psutil.Process(os.getpid())
             memory_before = process.memory_info().rss
             start = datetime.utcnow()
@@ -790,6 +794,7 @@ class MLPipeline():
             debug_info['debug'] = debug.lower() if isinstance(debug, str) else 'tmio'
 
         fit_pending = True
+        print("[DEBUG-hwlee]mlblocks.mlpipeline.fit: self.blocks.items() = {0}".format(self.blocks.items()))
         for block_name, block in self.blocks.items():
             if block_name == self._last_fit_block:
                 fit_pending = False
